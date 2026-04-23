@@ -5,106 +5,296 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gulfaraz Arshad | Laravel Developer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; }
-        .gradient-text { background: linear-gradient(90deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1, h2, .brand { font-family: 'Syne', sans-serif; }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Subtle animated grid background */
+        .bg-grid {
+            background-color: #09090b;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+
+        /* Glow blob */
+        .glow-blob {
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Avatar glow ring */
+        .avatar-ring {
+            position: relative;
+        }
+        .avatar-ring::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4, #3b82f6);
+            background-size: 200% 200%;
+            animation: spin-gradient 4s linear infinite;
+            z-index: -1;
+        }
+        @keyframes spin-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Stat counter animation */
+        .stat-card {
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59,130,246,0.4);
+        }
+
+        /* Card hover */
+        .project-card {
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .project-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(59,130,246,0.45);
+            box-shadow: 0 20px 40px rgba(59,130,246,0.08);
+        }
+
+        /* Fade in on load */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.7s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.45s; }
+
+        /* Pill tags */
+        .skill-pill {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #94a3b8;
+            transition: background 0.2s, color 0.2s;
+        }
+        .skill-pill:hover {
+            background: rgba(59,130,246,0.15);
+            color: #93c5fd;
+            border-color: rgba(59,130,246,0.3);
+        }
+
+        /* Nav link */
+        .nav-link {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: #e2e8f0; }
+
+        /* Divider dot */
+        .dot { width: 4px; height: 4px; background: #334155; border-radius: 50%; display: inline-block; }
     </style>
 </head>
-<body class="bg-[#09090b] text-slate-200 antialiased selection:bg-blue-500/30">
+<body class="bg-grid text-slate-200 antialiased selection:bg-blue-500/30 min-h-screen relative">
 
-    <div class="max-w-5xl mx-auto px-6">
-        <nav class="flex justify-between items-center py-10">
-            <div class="text-xl font-bold tracking-tighter text-white">gulfaraz.me</div>
-            <div class="space-x-6 text-sm font-medium">
-                <a href="https://github.com/CB-FARAZ" class="hover:text-blue-400 transition-colors">GitHub</a>
-                <a href="mailto:farazgul446@gmail.com" class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-all">Contact</a>
+    <div class="glow-blob"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative z-10">
+
+        <!-- NAV -->
+        <nav class="flex justify-between items-center py-10 fade-up">
+            <div class="brand text-lg font-bold tracking-tight text-white">gulfaraz.me</div>
+            <div class="flex items-center gap-6">
+                <a href="https://github.com/CB-FARAZ" target="_blank" rel="noopener" class="nav-link flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener" class="nav-link flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    LinkedIn
+                </a>
+                <a href="mailto:farazgul446@gmail.com" class="bg-blue-600 text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-blue-500 transition-all">
+                    Contact
+                </a>
             </div>
         </nav>
 
+        <!-- HERO -->
         <header class="flex flex-col-reverse md:flex-row items-center gap-12 py-16">
-            <div class="flex-1 space-y-6">
+            <div class="flex-1 space-y-6 fade-up delay-1">
+                <div class="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 uppercase tracking-widest bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full">
+                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                    Available for new opportunities
+                </div>
                 <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-white leading-none">
-                    Software <span class="gradient-text">Developer</span>
+                    Software<br><span class="gradient-text">Developer</span>
                 </h1>
-                <p class="text-xl text-slate-400 max-w-xl leading-relaxed">
-                    Results-driven engineer at <span class="text-white">Cruise Brains</span>. Specializing in <span class="text-blue-400">Laravel</span>, API integrations, and building full-stack applications that serve over 10,000 monthly users[cite: 25, 40].
+                <p class="text-lg text-slate-400 max-w-xl leading-relaxed">
+                    Results-driven engineer at <span class="text-white font-medium">Cruise Brains</span>. Specializing in
+                    <span class="text-blue-400 font-medium">Laravel</span>, API integrations, and building full-stack
+                    applications that serve over <span class="text-white font-medium">10,000+ monthly users</span>.
                 </p>
-                <div class="flex gap-4">
-                    <a href="GulfarazResume.pdf" download class="border border-slate-700 px-6 py-3 rounded-xl hover:bg-slate-800 transition-all font-semibold">Download CV</a>
+                <div class="flex gap-4 pt-2">
+                    <a href="GulfarazResume.pdf" download
+                       class="inline-flex items-center gap-2 border border-slate-700 px-6 py-3 rounded-xl hover:bg-slate-800 hover:border-slate-600 transition-all font-semibold text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Download CV
+                    </a>
+                    <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener"
+                       class="inline-flex items-center gap-2 bg-blue-600/10 border border-blue-500/30 text-blue-400 px-6 py-3 rounded-xl hover:bg-blue-600/20 transition-all font-semibold text-sm">
+                        View LinkedIn
+                    </a>
                 </div>
             </div>
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full blur opacity-40 group-hover:opacity-60 transition duration-1000"></div>
-                <img src="gulfaraz.jpg" alt="Gulfaraz Arshad" class="relative w-48 h-48 md:w-64 md:h-64 rounded-full object-cover border-2 border-slate-800 shadow-2xl">
+            <div class="avatar-ring fade-up delay-2">
+                <img src="gulfaraz.jpg" alt="Gulfaraz Arshad"
+                     class="w-48 h-48 md:w-64 md:h-64 rounded-full object-cover border-4 border-[#09090b] shadow-2xl">
             </div>
         </header>
 
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 py-12 border-y border-slate-800/50">
-            <div class="text-center">
-                <div class="text-4xl font-bold text-white mb-1">+40%</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Processing Speed [cite: 27, 40]</div>
+        <!-- STATS -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 py-12 fade-up delay-2">
+            <div class="stat-card text-center p-8 rounded-2xl bg-slate-900/50 border border-slate-800">
+                <div class="text-5xl font-bold text-white mb-2" style="font-family:'Syne',sans-serif;">+40%</div>
+                <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Processing Speed Gain</div>
             </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-white mb-1">10k+</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Monthly Users [cite: 25, 40]</div>
+            <div class="stat-card text-center p-8 rounded-2xl bg-slate-900/50 border border-slate-800">
+                <div class="text-5xl font-bold text-white mb-2" style="font-family:'Syne',sans-serif;">10k+</div>
+                <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Monthly Active Users</div>
             </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-white mb-1">-25%</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Bug Reduction [cite: 29]</div>
+            <div class="stat-card text-center p-8 rounded-2xl bg-slate-900/50 border border-slate-800">
+                <div class="text-5xl font-bold text-white mb-2" style="font-family:'Syne',sans-serif;">-25%</div>
+                <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Bug Reduction</div>
             </div>
         </section>
 
-        <section class="py-20 space-y-12">
-            <h2 class="text-3xl font-bold text-white tracking-tight">Core Expertise & Contributions</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                <div class="p-8 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all">
-                    <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        <!-- PROJECTS -->
+        <section class="py-16 space-y-10 fade-up delay-3">
+            <div>
+                <h2 class="text-3xl font-bold text-white tracking-tight mb-1">Core Expertise &amp; Contributions</h2>
+                <p class="text-slate-500 text-sm">Selected work from my time at Cruise Brains.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="project-card p-8 rounded-3xl bg-slate-900/40 border border-slate-800">
+                    <div class="w-11 h-11 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Enterprise SMS Marketing</h3>
-                    <p class="text-slate-400 text-sm mb-4">Developed a Laravel-based system focused on high-volume message refinement and personalization logic[cite: 10].</p>
+                    <h3 class="text-lg font-bold text-white mb-2">Enterprise SMS Marketing</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Developed a Laravel-based system focused on high-volume message refinement and personalization logic, enhancing campaign management and user engagement.</p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded uppercase tracking-tighter text-slate-400">Laravel</span>
-                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded uppercase tracking-tighter text-slate-400">API Integration</span>
+                        <span class="skill-pill">Laravel</span>
+                        <span class="skill-pill">API Integration</span>
+                        <span class="skill-pill">MySQL</span>
                     </div>
                 </div>
 
-                <div class="p-8 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-blue-500/50 transition-all">
-                    <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <div class="project-card p-8 rounded-3xl bg-slate-900/40 border border-slate-800">
+                    <div class="w-11 h-11 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Real-time Collaborative Editor</h3>
-                    <p class="text-slate-400 text-sm mb-4">Leading development of a collaborative tool emphasizing real-time interactions and backend synchronization[cite: 13].</p>
+                    <h3 class="text-lg font-bold text-white mb-2">Real-time Collaborative Editor</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Leading development of a Google Docs-style collaborative tool with real-time multi-user interactions and backend synchronization using Laravel and Livewire.</p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded uppercase tracking-tighter text-slate-400">Livewire</span>
-                        <span class="text-[10px] font-bold px-2 py-1 bg-slate-800 rounded uppercase tracking-tighter text-slate-400">Alpine JS</span>
+                        <span class="skill-pill">Livewire</span>
+                        <span class="skill-pill">Alpine.js</span>
+                        <span class="skill-pill">Laravel</span>
+                    </div>
+                </div>
+
+                <div class="project-card p-8 rounded-3xl bg-slate-900/40 border border-slate-800">
+                    <div class="w-11 h-11 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">URL Shortener</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Designed and launched a full-featured URL shortener built with Laravel, achieving a successful go-live and strong positive user adoption.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-pill">Laravel</span>
+                        <span class="skill-pill">Tailwind CSS</span>
+                        <span class="skill-pill">MySQL</span>
+                    </div>
+                </div>
+
+                <div class="project-card p-8 rounded-3xl bg-slate-900/40 border border-slate-800">
+                    <div class="w-11 h-11 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">AI Visibility Tracker</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Contributed to an application tracking business AI visibility, improving data analytics pipelines and delivering enhanced reporting features.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="skill-pill">Laravel</span>
+                        <span class="skill-pill">API Integration</span>
+                        <span class="skill-pill">Data Analytics</span>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <section class="pb-20">
-            <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                <span>Laravel</span>
-                <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-                <span>Livewire</span>
-                <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-                <span>PHP (OOP)</span>
-                <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-                <span>MySQL</span>
-                <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-                <span>Tailwind CSS</span>
-                <span class="w-1 h-1 bg-slate-700 rounded-full"></span>
-                <span>Git [cite: 43]</span>
+        <!-- SKILLS STRIP -->
+        <section class="pb-16 fade-up delay-4">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-5">Tech Stack</h2>
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="skill-pill">Laravel</span>
+                <span class="skill-pill">PHP (OOP)</span>
+                <span class="skill-pill">Livewire</span>
+                <span class="skill-pill">Alpine.js</span>
+                <span class="skill-pill">MySQL</span>
+                <span class="skill-pill">Tailwind CSS</span>
+                <span class="skill-pill">JavaScript</span>
+                <span class="skill-pill">jQuery</span>
+                <span class="skill-pill">Bootstrap</span>
+                <span class="skill-pill">REST APIs</span>
+                <span class="skill-pill">Git</span>
+                <span class="skill-pill">MVC Architecture</span>
             </div>
         </section>
 
-        <footer class="py-10 border-t border-slate-800 text-center text-slate-500 text-xs">
-            &copy; 2026 Gulfaraz Arshad. Multan, Punjab[cite: 9, 36].
+        <!-- FOOTER -->
+        <footer class="py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs">
+            <span>&copy; 2026 Gulfaraz Arshad &mdash; Multan, Punjab, Pakistan</span>
+            <div class="flex items-center gap-5">
+                <a href="https://github.com/CB-FARAZ" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">GitHub</a>
+                <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">LinkedIn</a>
+                <a href="mailto:farazgul446@gmail.com" class="hover:text-slate-300 transition-colors">Email</a>
+            </div>
         </footer>
+
     </div>
 
 </body>
