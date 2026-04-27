@@ -1,16 +1,1 @@
-# Gulfaraz Arshad | Backend Developer
-### [gulfaraz.me](https://gulfaraz.me)
-
-Welcome to my personal corner of the web. I am a software engineer focused on backend architecture, automation logic, and building efficient systems.
-
-## 🛠 Tech Stack
-* **Languages:** PHP (Core & Laravel), JavaScript
-* **Specialties:** Backend Automation, Message Refinement Logic, API Integration
-* **Tools:** GitHub Student Developer Pack, Git, Linux
-
-## 🌐 Connect with Me
-* **Portfolio:** [gulfaraz.me](https://gulfaraz.me)
-* **GitHub:** [@gulfaraz-arshad](https://github.com/gulfaraz-arshad)
-
----
-*Built with ❤️ and powered by the GitHub Student Developer Pack.*
+Gulfaraz Arshad | Laravel Software Developergulfaraz.meI am a results-driven Laravel Software Developer with 3+ years of professional experience designing and optimizing full-stack web applications. My focus is on building high-performance backend architectures, seamless API integrations, and scalable automation logic.🛠 Tech StackBackend: PHP (Core & Laravel), Livewire, MVC Architecture Frontend: JavaScript, Alpine.js, Tailwind CSS, jQuery Database: MySQL (Design & Optimization) Tools: Git, GitHub, Postman, Linux 🚀 Professional HighlightsBackend Optimization: Achieved a 40% improvement in application processing speed through targeted PHP refactoring.Quality Assurance: Reduced system bugs by 25% by implementing rigorous code reviews and structured QA pipelines.Scalable Solutions: Developed and maintained enterprise-grade platforms, including SMS marketing tools and call tracking software supporting high-volume workflows.API Development: Expert in designing and managing RESTful APIs to bridge complex front-end interfaces with robust back-end services.🎓 Education & CertificationB.B. Information Technology: Virtual University of Pakistan (In Progress) GitHub Student Developer Pack: Actively utilizing industry-standard tools to power personal and professional projects.🌐 Connect with MePortfolio: gulfaraz.me GitHub: @gulfaraz-arshad LinkedIn: linkedin.com/in/gulfaraz-arshad-082323282 Built with precision and powered by the GitHub Student Developer Pack.
