@@ -11,19 +11,6 @@
     <title>Gulfaraz Arshad | Laravel Developer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-      <!-- Proxy fetch interceptor: redirects CallGauge API calls through your Laravel backend -->
-    <script>
-        (function () {
-            const _originalFetch = window.fetch;
-            window.fetch = function (url, options) {
-                if (typeof url === 'string' && url.includes('app.callgauge.ai/api/number')) {
-                    url = url.replace('https://app.callgauge.ai/api', '');
-                }
-                return _originalFetch(url, options);
-            };
-        })();
-    </script>
-
     <script src="https://app.callgauge.ai/js/dynamic-number-insertion.js?poolId=5"></script>
     <style>
         * {
