@@ -11,8 +11,10 @@
     <title>Gulfaraz Arshad | Laravel Developer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <script src="https://app.callgauge.ai/js/track.js?cg_form_id=19"></script>
-            
+    <script>
+        // CallGauge tracking script is loaded only after cookie consent is accepted.
+        // See the cookie banner script near the end of <body>.
+    </script>
     
             
             
@@ -398,17 +400,22 @@
         } else if (!consent) {
             banner.style.display = 'flex';
         }
-        // if consent === 'declined', do nothing — CallGauge stays unloaded
+        // if consent === 'declined', do nothing — CallGauge stays unloaded,
+        // so its journey tracking, heartbeat, and form tracking never run.
 
         document.getElementById('cookie-accept').addEventListener('click', () => {
             localStorage.setItem('cookie-consent', 'accepted');
             banner.style.display = 'none';
+            // Set CallGauge's consent cookie directly — track.js only reads
+            // this cookie now, it no longer exposes a grantConsent() API.
+            document.cookie = 'tracking_consent=true; path=/; max-age=' + (60 * 60 * 24 * 365) + '; SameSite=Lax';
             loadCallGauge();
         });
 
         document.getElementById('cookie-decline').addEventListener('click', () => {
             localStorage.setItem('cookie-consent', 'declined');
             banner.style.display = 'none';
+            document.cookie = 'tracking_consent=; path=/; max-age=0; SameSite=Lax';
         });
     })();
 </script>
