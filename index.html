@@ -345,7 +345,35 @@
     </footer>
 
 </div>
+    <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px 24px;z-index:9999;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;font-family:inherit;font-size:14px;">
+  <span>This site uses cookies for basic analytics. See our <a href="/privacy-policy.html" style="color:#4da6ff;">Privacy Policy</a>.</span>
+  <div style="display:flex;gap:8px;">
+    <button id="cookie-accept" style="background:#4da6ff;color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Accept</button>
+    <button id="cookie-decline" style="background:transparent;color:#fff;border:1px solid #555;padding:8px 16px;border-radius:6px;cursor:pointer;">Decline</button>
+  </div>
+</div>
 <script>
+
+ (function() {
+  const banner = document.getElementById('cookie-banner');
+  const consent = localStorage.getItem('cookie-consent');
+
+  if (!consent) {
+    banner.style.display = 'flex';
+  }
+
+  document.getElementById('cookie-accept').addEventListener('click', () => {
+    localStorage.setItem('cookie-consent', 'accepted');
+    banner.style.display = 'none';
+    // If you use Google Analytics, initialize it here after acceptance
+  });
+
+  document.getElementById('cookie-decline').addEventListener('click', () => {
+    localStorage.setItem('cookie-consent', 'declined');
+    banner.style.display = 'none';
+  });
+})();
+    
     const form = document.getElementById("contact-form");
     const status = document.getElementById("form-status");
 
