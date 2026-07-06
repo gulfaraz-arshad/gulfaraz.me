@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://app.callgauge.ai/js/track.js?cg_form_id=19"></script>
+            
     
             
             
@@ -340,40 +341,22 @@
             <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener"
                class="hover:text-slate-300 transition-colors">LinkedIn</a>
             <a href="mailto:farazgul446@gmail.com" class="hover:text-slate-300 transition-colors">Email</a>
-            
+            <a href="privacy-policy.html" class="hover:text-slate-300 transition-colors">Privacy Policy</a>
         </div>
     </footer>
 
 </div>
-    <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px 24px;z-index:9999;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;font-family:inherit;font-size:14px;">
-  <span>This site uses cookies for basic analytics. See our <a href="/privacy-policy.html" style="color:#4da6ff;">Privacy Policy</a>.</span>
-  <div style="display:flex;gap:8px;">
-    <button id="cookie-accept" style="background:#4da6ff;color:#000;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">Accept</button>
-    <button id="cookie-decline" style="background:transparent;color:#fff;border:1px solid #555;padding:8px 16px;border-radius:6px;cursor:pointer;">Decline</button>
-  </div>
+
+<!-- Cookie consent banner -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0f172a;color:#e2e8f0;padding:16px 24px;z-index:9999;display:none;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;font-family:'Inter',sans-serif;font-size:14px;border-top:1px solid #1e293b;">
+    <span>This site uses a form-tracking cookie (CallGauge) and loads Google Fonts. See our <a href="privacy-policy.html" style="color:#60a5fa;">Privacy Policy</a>.</span>
+    <div style="display:flex;gap:8px;">
+        <button id="cookie-accept" style="background:#3b82f6;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">Accept</button>
+        <button id="cookie-decline" style="background:transparent;color:#e2e8f0;border:1px solid #334155;padding:8px 16px;border-radius:8px;cursor:pointer;">Decline</button>
+    </div>
 </div>
+
 <script>
-
- (function() {
-  const banner = document.getElementById('cookie-banner');
-  const consent = localStorage.getItem('cookie-consent');
-
-  if (!consent) {
-    banner.style.display = 'flex';
-  }
-
-  document.getElementById('cookie-accept').addEventListener('click', () => {
-    localStorage.setItem('cookie-consent', 'accepted');
-    banner.style.display = 'none';
-    // If you use Google Analytics, initialize it here after acceptance
-  });
-
-  document.getElementById('cookie-decline').addEventListener('click', () => {
-    localStorage.setItem('cookie-consent', 'declined');
-    banner.style.display = 'none';
-  });
-})();
-    
     const form = document.getElementById("contact-form");
     const status = document.getElementById("form-status");
 
@@ -395,6 +378,39 @@
             status.classList.add("text-red-400");
         }
     });
+</script>
+
+<script>
+    (function () {
+        const banner = document.getElementById('cookie-banner');
+        const consent = localStorage.getItem('cookie-consent');
+
+        function loadCallGauge() {
+            if (document.getElementById('callgauge-script')) return;
+            const s = document.createElement('script');
+            s.id = 'callgauge-script';
+            s.src = 'https://app.callgauge.ai/js/track.js?cg_form_id=19';
+            document.head.appendChild(s);
+        }
+
+        if (consent === 'accepted') {
+            loadCallGauge();
+        } else if (!consent) {
+            banner.style.display = 'flex';
+        }
+        // if consent === 'declined', do nothing — CallGauge stays unloaded
+
+        document.getElementById('cookie-accept').addEventListener('click', () => {
+            localStorage.setItem('cookie-consent', 'accepted');
+            banner.style.display = 'none';
+            loadCallGauge();
+        });
+
+        document.getElementById('cookie-decline').addEventListener('click', () => {
+            localStorage.setItem('cookie-consent', 'declined');
+            banner.style.display = 'none';
+        });
+    })();
 </script>
 </body>
 </html>
