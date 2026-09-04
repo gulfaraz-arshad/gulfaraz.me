@@ -318,13 +318,21 @@
                     </div>
                 </div>
             </div>
-            <!-- <span>https://www.callgauge.ai/</span> -->
-         <form id="contact-form"  class="contact-us space-y-4 bg-slate-900/40 p-8 rounded-3xl border border-slate-800">
+
+            <form id="contact-form" class="contact-us space-y-4 bg-slate-900/40 p-8 rounded-3xl border border-slate-800">
+                <!-- TEST: Honeypot field (Leave empty for normal user, fill with text to test bot detection) -->
+                <input type="text" name="_hp" tabIndex="-1" autocomplete="off" style="display:none;">
+
+                <!-- TEST: Hidden fields to test capture_hidden_fields feature -->
+                <input type="hidden" name="lead_source" value="portfolio_website">
+                <input type="hidden" name="campaign_id" value="q3_hiring_2026">
+
                 <input type="text" name="first_name" placeholder="First Name" required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
-                <input type="text" name="last_name" placeholder="Last Name " required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
+                <input type="text" name="last_name" placeholder="Last Name" required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
                 <input type="email" name="email" placeholder="Email Address" required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
                 <input type="number" name="phone" placeholder="Phone Number" required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
                 <textarea name="message" rows="4" placeholder="How can I help you?" required class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white"></textarea>
+                
                 <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all">Send Message</button>
                 <p id="form-status" class="text-sm text-center mt-2 hidden"></p>
             </form>
@@ -336,9 +344,9 @@
         <div class="flex flex-col gap-2">
             <span>&copy; 2026 Gulfaraz Arshad &mdash; Multan, Pakistan</span>
             <span class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
-                    B.B. Information Technology Student @ VU Pakistan
-                </span>
+                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                B.B. Information Technology Student @ VU Pakistan
+            </span>
         </div>
         <div class="flex items-center gap-5">
             <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">GitHub</a>
@@ -351,24 +359,23 @@
 
 </div>
 
-
 <script>
     const form = document.getElementById("contact-form");
     const status = document.getElementById("form-status");
 
-   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    // Allow tracking script to catch submit, then redirect or show success UI
-    status.innerHTML = "Thank you! Your message has been sent.";
-    status.classList.remove("hidden");
-    status.classList.add("text-emerald-400");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        // Allow tracking script to catch submit, then redirect or show success UI
+        status.innerHTML = "Thank you! Your message has been sent.";
+        status.classList.remove("hidden");
+        status.classList.add("text-emerald-400");
 
-    // Optional delay before redirecting if required
-    setTimeout(() => {
-        window.location.href = "thanks.html";
-    }, 1000);
-});
+        // Optional delay before redirecting if required
+        setTimeout(() => {
+            window.location.href = "thanks.html";
+        }, 1000);
+    });
 </script>
 
 </body>
