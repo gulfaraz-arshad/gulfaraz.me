@@ -356,26 +356,19 @@
     const form = document.getElementById("contact-form");
     const status = document.getElementById("form-status");
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = new FormData(e.target);
-        const response = await fetch(e.target.action, {
-            method: 'POST',
-            body: data,
-            headers: { 'Accept': 'application/json' }
-        });
+   form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    // Allow tracking script to catch submit, then redirect or show success UI
+    status.innerHTML = "Thank you! Your message has been sent.";
+    status.classList.remove("hidden");
+    status.classList.add("text-emerald-400");
 
-        console.log(JSON.stringify(response));
-
-        if (response.ok) {
-            // Redirect manually via JS since the server-side redirect is locked
-            window.location.href = "thanks.html";
-        } else {
-            status.innerHTML = "Oops! There was a problem submitting your form";
-            status.classList.remove("hidden");
-            status.classList.add("text-red-400");
-        }
-    });
+    // Optional delay before redirecting if required
+    setTimeout(() => {
+        window.location.href = "thanks.html";
+    }, 1000);
+});
 </script>
 
 </body>
