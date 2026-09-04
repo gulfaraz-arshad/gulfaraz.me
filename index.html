@@ -365,6 +365,8 @@
             headers: { 'Accept': 'application/json' }
         });
 
+        console.log(JSON.stringify(response));
+
         if (response.ok) {
             // Redirect manually via JS since the server-side redirect is locked
             window.location.href = "thanks.html";
