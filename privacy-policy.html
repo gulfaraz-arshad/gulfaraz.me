@@ -3,66 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Privacy Policy for gulfaraz.me — covering Google AdSense advertising cookies, Google Analytics, and contact data handling.">
+    <meta property="og:title" content="Privacy Policy | Gulfaraz Arshad">
+    <meta property="og:description" content="How gulfaraz.me uses cookies, Google AdSense, Google Analytics, and contact form submissions.">
+    <meta property="og:image" content="/gulfaraz.jpg">
     <title>Privacy Policy | Gulfaraz Arshad</title>
+    <link rel="canonical" href="https://gulfaraz.me/privacy-policy.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY7ETR9GRB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WY7ETR9GRB');
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
+            crossorigin="anonymous"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #09090b; }
-        h1, h2 { font-family: 'Syne', sans-serif; }
-        a { color: #60a5fa; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-grid {
+            background-color: #09090b;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+        .glow-blob {
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.7s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .nav-link { color: #94a3b8; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #e2e8f0; }
     </style>
 </head>
-<body class="text-slate-300 antialiased">
-<div class="max-w-3xl mx-auto px-6 py-16">
+<body class="bg-grid text-slate-200 antialiased selection:bg-blue-500/30 min-h-screen relative">
 
-    <a href="/" class="text-sm text-slate-500 hover:text-slate-300">&larr; Back to gulfaraz.me</a>
+<div class="glow-blob"></div>
 
-    <h1 class="text-4xl font-bold text-white mt-6 mb-2">Privacy Policy</h1>
-    <p class="text-slate-500 text-sm mb-10">Last updated: July 6, 2026</p>
+<div class="max-w-5xl mx-auto px-6 relative z-10">
 
-    <div class="space-y-8 text-sm leading-relaxed text-slate-400">
+    <nav class="flex justify-between items-center py-10 fade-up">
+        <div class="brand text-lg font-bold tracking-tight text-white"><a href="/">gulfaraz.me</a></div>
+        <div class="flex items-center gap-6">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="nav-link flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Who I am</h2>
-            <p>This website (gulfaraz.me) is a personal portfolio operated by Gulfaraz Arshad, based in Multan, Punjab, Pakistan.</p>
-        </section>
+    <main class="max-w-3xl mx-auto py-8 pb-20 fade-up delay-1">
+        <article>
+            <header class="mb-10 pb-8 border-b border-slate-800">
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-4">
+                    Privacy <span class="gradient-text">Policy</span>
+                </h1>
+                <p class="text-xs text-slate-400">Last updated: November 17, 2026</p>
+            </header>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">What this site uses</h2>
-            <p>This site does not run general-purpose analytics, but it does use the following third-party services:</p>
-            <ul class="list-disc list-inside mt-3 space-y-2">
-                <li><strong class="text-slate-300">CallGauge</strong> &mdash; a form-tracking service used on the contact form. If you accept cookies, CallGauge may set a cookie to track that the form was submitted and to help understand where site visitors come from. If you decline, this script is not loaded.</li>
-                <li><strong class="text-slate-300">Google Fonts</strong> &mdash; typefaces are loaded directly from Google's servers, which means your browser makes a request to Google (including your IP address) to fetch the fonts.</li>
-                <li><strong class="text-slate-300">Tailwind CSS (CDN)</strong> &mdash; a styling library loaded from a public CDN. It does not collect personal data.</li>
-            </ul>
-        </section>
+            <div class="space-y-6 text-slate-300 leading-relaxed text-[15px]">
+                <h2 class="text-xl font-bold text-white pt-2">Who I Am</h2>
+                <p>
+                    This website (<strong class="text-white">gulfaraz.me</strong>) is a personal software engineering portfolio and technical blog operated by <strong class="text-white">Gulfaraz Arshad</strong>, based in Multan, Punjab, Pakistan.
+                </p>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Cookies</h2>
-            <p>A cookie banner is shown on your first visit. Choosing "Accept" allows the CallGauge form-tracking script to load and set its cookie. Choosing "Decline" keeps that script from loading. Your choice is remembered in your browser and can be reset by clearing your browser's site data.</p>
-        </section>
+                <h2 class="text-xl font-bold text-white pt-4">Third-Party Services, Analytics &amp; Advertising</h2>
+                <p>
+                    To keep this website free and understand readership, <strong class="text-white">gulfaraz.me</strong> uses the following third-party services:
+                </p>
+                <ul class="list-disc pl-6 space-y-3 text-slate-300">
+                    <li>
+                        <strong class="text-white">Google AdSense:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to visitors based on their visit to <strong class="text-white">gulfaraz.me</strong> and/or other sites on the Internet. Users may opt out of personalized advertising by visiting <a href="https://myadcenter.google.com/" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Google Ads Settings</a> or <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener" class="text-blue-400 hover:underline">www.aboutads.info</a>.
+                    </li>
+                    <li>
+                        <strong class="text-white">Google Analytics (GA4):</strong> This site uses Google Analytics to collect anonymized usage statistics (such as pages visited, approximate region, device type, and referral source) in order to understand which technical articles are most helpful. Google Analytics sets first-party cookies and processes IP addresses in accordance with <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Google's Privacy &amp; Terms</a>.
+                    </li>
+                    <li>
+                        <strong class="text-white">Google Fonts &amp; Tailwind CSS CDN:</strong> Typefaces and stylesheets are loaded from Google Fonts and public CDN servers, which receive standard HTTP request metadata (such as your IP address and browser user agent) to deliver static assets.
+                    </li>
+                </ul>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Contact form</h2>
-            <p>If you use the contact form, the information you enter (name, email, phone number, and message) is submitted so I can respond to your inquiry. It is not sold or shared with third parties beyond the tracking described above.</p>
-        </section>
+                <h2 class="text-xl font-bold text-white pt-4">Cookies &amp; Consent</h2>
+                <p>
+                    Cookies are small text files stored by your browser. Cookies on this site are used for ad delivery and personalization (Google AdSense) and traffic measurement (Google Analytics). Where applicable, a cookie banner allows you to manage consent preferences, and you can also block, restrict, or delete cookies at any time through your browser settings.
+                </p>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Your choices</h2>
-            <p>You can decline the cookie banner at any time, or clear cookies through your browser settings. If you'd like any data you've submitted through the contact form deleted, email me at <a href="mailto:farazgul446@gmail.com">farazgul446@gmail.com</a>.</p>
-        </section>
+                <h2 class="text-xl font-bold text-white pt-4">Contact Form Submissions</h2>
+                <p>
+                    If you submit the contact form on <strong class="text-white">gulfaraz.me</strong>, the information you provide (first name, last name, email address, phone number, and message) is used solely to respond to your inquiry or collaboration request. Your contact details are never sold or shared with third parties.
+                </p>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Changes to this policy</h2>
-            <p>If the tools or services used on this site change, this page will be updated to reflect that.</p>
-        </section>
+                <h2 class="text-xl font-bold text-white pt-4">Your Privacy Rights &amp; Choices</h2>
+                <ul class="list-disc pl-6 space-y-2 text-slate-300">
+                    <li>Opt out of personalized Google advertising via <a href="https://myadcenter.google.com/" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Google Ad Settings</a>.</li>
+                    <li>Opt out of Google Analytics tracking across websites using the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Google Analytics Opt-out Browser Add-on</a>.</li>
+                    <li>Request access to or deletion of any personal information you submitted through the contact form by emailing <a href="mailto:farazgul446@gmail.com" class="text-blue-400 hover:underline">farazgul446@gmail.com</a>.</li>
+                </ul>
 
-        <section>
-            <h2 class="text-xl font-bold text-white mb-2">Contact</h2>
-            <p>Questions about this policy: <a href="mailto:farazgul446@gmail.com">farazgul446@gmail.com</a></p>
-        </section>
+                <h2 class="text-xl font-bold text-white pt-4">Changes to This Policy</h2>
+                <p>
+                    If the services, analytics, or advertising partners used on this website change, this page will be updated with a revised date at the top.
+                </p>
 
-    </div>
+                <h2 class="text-xl font-bold text-white pt-4">Contact</h2>
+                <p>
+                    For any questions regarding this Privacy Policy, email <a href="mailto:farazgul446@gmail.com" class="text-blue-400 hover:underline">farazgul446@gmail.com</a>.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer class="py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-xs">
+        <div class="flex flex-col gap-2">
+            <span>&copy; 2026 Gulfaraz Arshad &mdash; Multan, Pakistan</span>
+            <span class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                B.B. Information Technology Student @ VU Pakistan
+            </span>
+        </div>
+        <div class="flex items-center gap-5">
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">GitHub</a>
+            <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">LinkedIn</a>
+            <a href="mailto:farazgul446@gmail.com" class="hover:text-slate-300 transition-colors">Email</a>
+            <a href="/privacy-policy.html" class="hover:text-slate-300 transition-colors text-blue-400">Privacy Policy</a>
+        </div>
+    </footer>
+
 </div>
+
 </body>
 </html>
