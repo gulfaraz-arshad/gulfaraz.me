@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="How to run zero-downtime schema migrations on multi-million row MySQL 8+ production tables using ALGORITHM=INSTANT and LOCK=NONE in Laravel.">
+    <meta property="og:title" content="Zero-Downtime Schema Migrations in MySQL 8+ with ALGORITHM=INSTANT | Gulfaraz Arshad">
+    <meta property="og:description" content="Alter 50M+ row MySQL tables in milliseconds without metadata locks or table rebuilds.">
+    <meta property="og:image" content="/gulfaraz.jpg">
+    <title>Zero-Downtime Schema Migrations in MySQL 8+ with ALGORITHM=INSTANT | Gulfaraz Arshad</title>
+    <link rel="canonical" href="https://gulfaraz.me/blog/mysql-instant-schema-migrations.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY7ETR9GRB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WY7ETR9GRB');
+    </script>
+
+    <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your AdSense Publisher ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
+     crossorigin="anonymous"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-grid {
+            background-color: #09090b;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+        .glow-blob {
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.7s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .skill-pill {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+        }
+        .nav-link { color: #94a3b8; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #e2e8f0; }
+    </style>
+</head>
+<body class="bg-grid text-slate-200 antialiased selection:bg-blue-500/30 min-h-screen relative">
+
+<div class="glow-blob"></div>
+
+<div class="max-w-5xl mx-auto px-6 relative z-10">
+
+    <nav class="flex justify-between items-center py-10 fade-up">
+        <div class="brand text-lg font-bold tracking-tight text-white"><a href="/">gulfaraz.me</a></div>
+        <div class="flex items-center gap-6">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/blog/" class="nav-link text-blue-400">Blog</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="nav-link flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto py-8 pb-20 fade-up delay-1">
+        <article>
+            <header class="mb-10 pb-8 border-b border-slate-800">
+                <a href="/blog/" class="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 uppercase tracking-widest mb-6">
+                    &larr; Back to All Articles
+                </a>
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-5">
+                    Zero-Downtime Schema Migrations in MySQL 8+ with <span class="gradient-text">ALGORITHM=INSTANT</span>
+                </h1>
+                <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mb-5">
+                    <span>By <strong class="text-white">Gulfaraz Arshad</strong></span>
+                    <span>&bull;</span>
+                    <span>Published November 17, 2026</span>
+                    <span>&bull;</span>
+                    <span>6 min read</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="skill-pill">MySQL 8+</span>
+                    <span class="skill-pill">Laravel</span>
+                    <span class="skill-pill">Database Engineering</span>
+                    <span class="skill-pill">High Volume</span>
+                </div>
+            </header>
+
+            <div class="space-y-6 text-slate-300 leading-relaxed text-[15px]">
+                <h2 class="text-2xl font-bold text-white pt-4">Why Standard <code class="text-blue-400">ALTER TABLE</code> Statements Lock Production Tables</h2>
+                <p>
+                    Running a standard <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALTER TABLE</code> on a MySQL table containing 50 million to 100 million rows is one of the fastest ways to cause an unexpected production outage. When MySQL falls back to <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALGORITHM=COPY</code> or a blocking <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INPLACE</code> rebuild, it clones every data page on disk and holds metadata locks that stall incoming <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INSERT</code> and <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">UPDATE</code> queries across your Laravel queue workers and API endpoints.
+                </p>
+                <p>
+                    Introduced in MySQL 8.0.12 and dramatically expanded in MySQL 8.0.29 and 8.4, <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALGORITHM=INSTANT</code> updates only the table metadata inside the InnoDB data dictionary. Zero existing rows are rewritten, meaning the migration finishes in a few milliseconds regardless of whether your table has ten rows or a hundred million.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white pt-6">Executing an Instant Migration in Laravel</h2>
+                <p>
+                    Laravel's Schema Builder generates standard <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALTER TABLE</code> statements without forcing an algorithm constraint. When modifying high-throughput event or logging tables, wrap your DDL inside <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">DB::statement()</code> and explicitly pass <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALGORITHM=INSTANT</code>:
+                </p>
+
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>&lt;?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        DB::statement("
+            ALTER TABLE campaign_events
+            ADD COLUMN provider_status VARCHAR(32) NULL AFTER status,
+            ALGORITHM=INSTANT
+        ");
+    }
+
+    public function down(): void
+    {
+        DB::statement("
+            ALTER TABLE campaign_events
+            DROP COLUMN provider_status,
+            ALGORITHM=INSTANT
+        ");
+    }
+};</code></pre>
+
+                <p>
+                    By explicitly declaring <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALGORITHM=INSTANT</code>, you create a strict safety guard: if the operation is unsupported on that table, MySQL immediately throws <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ERROR 1845 (0A000): ALGORITHM=INSTANT is not supported for this operation</code> instead of silently locking your database for twenty minutes.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white pt-6">Supported vs. Unsupported Operations in MySQL 8.0.29+ / 8.4</h2>
+                <ul class="list-disc pl-6 space-y-2.5 text-slate-300">
+                    <li><strong class="text-white">Adding columns anywhere:</strong> Supported both at the end of a table and mid-table using <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">AFTER column_name</code>.</li>
+                    <li><strong class="text-white">Dropping columns:</strong> Instantaneous as long as the column is not part of a primary key, secondary index, or foreign key constraint.</li>
+                    <li><strong class="text-white">Renaming columns &amp; modifying defaults:</strong> Setting or dropping column <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">DEFAULT</code> values and adding <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ENUM</code> values at the end of the list execute instantaneously.</li>
+                    <li><strong class="text-white">What requires <code class="text-blue-400">ALGORITHM=INPLACE, LOCK=NONE</code> instead:</strong> Adding secondary indexes, changing column data types, or altering <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">NULL</code> to <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">NOT NULL</code> cannot use <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INSTANT</code>, though online DDL with <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">LOCK=NONE</code> still permits concurrent reads and writes.</li>
+                </ul>
+
+                <h2 class="text-2xl font-bold text-white pt-6">Watch Out for the 64 Row-Version Limit</h2>
+                <p>
+                    Each time you run an <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INSTANT</code> column addition or drop on an InnoDB table, MySQL increments the table's internal row version counter. InnoDB supports a maximum of <strong class="text-white">64 row versions</strong> per table.
+                </p>
+                <p>
+                    You can inspect your table's current row version count anytime by querying <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INFORMATION_SCHEMA.INNODB_TABLES</code>:
+                </p>
+
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>SELECT NAME, TOTAL_ROW_VERSIONS
+FROM INFORMATION_SCHEMA.INNODB_TABLES
+WHERE NAME LIKE '%campaign_events%';</code></pre>
+
+                <p>
+                    Once <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">TOTAL_ROW_VERSIONS</code> reaches 64, further <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INSTANT</code> column changes will be rejected until you reset the counter during a scheduled maintenance window using <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">OPTIMIZE TABLE</code> or <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ALTER TABLE ... ENGINE=InnoDB</code>.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white pt-6">Production Checklist Before Deploying DDL</h2>
+                <ul class="list-disc pl-6 space-y-2 text-slate-3
