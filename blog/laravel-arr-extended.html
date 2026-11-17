@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building Laravel Arr Extended: Clean Sequential &amp; Circular Array Navigation with Arr::after() | Gulfaraz Arshad</title>
+  <meta name="description" content="How a rejected Laravel framework pull request turned into gulfaraz-arshad/laravel-arr-extended — adding strict, associative-safe Arr::after() navigation with wrap-around support.">
+  <link rel="canonical" href="https://gulfaraz.me/blog/laravel-arr-extended.html">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <header>
+    <nav>
+      <a href="/">gulfaraz.me</a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/#work">Work</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        <li><a href="/privacy-policy.html">Privacy Policy</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container" style="max-width: 820px; margin: 0 auto; padding: 2rem 1rem;">
+    <article>
+      <header>
+        <p><a href="/blog/">&larr; Back to All Articles</a></p>
+        <h1>Building Laravel Arr Extended: Sequential &amp; Circular Array Navigation with <code>Arr::after()</code></h1>
+        <p class="meta">By <strong>Gulfaraz Arshad</strong> &bull; Laravel &amp; Backend Engineer &bull; Published November 17, 2026</p>
+      </header>
+
+      <section>
+        <h2>Why I Built <code>laravel-arr-extended</code></h2>
+        <p>Laravel's <code>Illuminate\Support\Arr</code> utility class is one of the most ergonomic parts of the framework. Methods like <code>Arr::first()</code>, <code>Arr::last()</code>, and <code>Arr::get()</code> eliminate dozens of repetitive <code>isset()</code> checks across production codebases.</p>
+        <p>However, while building multi-step checkout flows, state machines, and round-robin provider routers in Laravel, I kept running into a small but persistent gap: there is no built-in helper to retrieve the element immediately following a specific value in an array.</p>
+        <p>I originally opened a pull request against the Laravel framework (PR #60081) proposing <code>Arr::after()</code>. Taylor Otwell reviewed it and noted that the helper felt slightly too specialized for the core framework, which intentionally stays lean so maintainers aren't carrying every niche utility forever. That feedback made complete sense—and it gave me the exact blueprint to release <a href="https://github.com/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener">gulfaraz-arshad/laravel-arr-extended</a> as a dedicated, zero-bloat Composer package for PHP 8.1+ and Laravel 11.x/12.x.</p>
+
+        <h2>The Problem with Manual <code>array_search()</code> Boilerplate</h2>
+        <p>Without a dedicated helper, fetching the next item after a known value in PHP usually ends up looking like this:</p>
+
+        <pre><code>$steps = ['personal', 'address', 'payment', 'confirm'];
+$current = 'payment';
+
+$index = array_search($current, $steps, true);
+$next = ($index !== false && isset($steps[$index + 1]))
+    ? $steps[$index + 1]
+    : null;</code></pre>
+
+        <p>On the surface, three lines of code seem harmless. In real applications, this pattern breaks down quickly for three reasons:</p>
+        <ul>
+          <li><strong>Associative arrays fail silently:</strong> Using <code>$index + 1</code> assumes consecutive integer keys (<code>0, 1, 2...</code>). If your array has string keys or gaps after an <code>unset()</code> call, <code>$index + 1</code> returns <code>null</code> even when a next element exists.</li>
+          <li><strong>No circular wrap-around:</strong> For round-robin queues, carousel slides, or weekly schedules, reaching the final element requires an extra modulo or reset branch to loop back to index zero.</li>
+          <li><strong>Loose type traps:</strong> Forgetting the third <code>true</code> argument in <code>array_search()</code> causes PHP's type juggling to match <code>'1'</code> against <code>1</code> or <code>0</code> against <code>false</code>.</li>
+        </ul>
+
+        <h2>Installing and Using <code>Arr::after()</code></h2>
+        <p>You can install the package in any Laravel 11 or 12 application via Composer:</p>
+
+        <pre><code>composer require gulfaraz-arshad/laravel-arr-extended</code></pre>
+
+        <p>Once installed, import <code>GulfarazArshad\LaravelArrExtended\Arr</code> and call <code>Arr::after()</code> with your array, target value, and optional <code>wrap</code> flag:</p>
+
+        <pre><code>&lt;?php
+
+use GulfarazArshad\LaravelArrExtended\Arr;
+
+// Basic sequential lookup
+Arr::after(['a', 'b', 'c'], 'a'); // 'b'
+
+// End of array returns null by default
+Arr::after(['a', 'b', 'c'], 'c'); // null
+
+// Missing value or empty array returns null safely
+Arr::after(['a', 'b', 'c'], 'z'); // null
+Arr::after([], 'a');              // null
+
+// Works seamlessly on associative arrays regardless of key names
+Arr::after(['first_key' => 'a', 'second_key' => 'b'], 'a'); // 'b'</code></pre>
+
+        <h2>Strict Type Safety Out of the Box</h2>
+        <p>Under the hood, <code>Arr::after()</code> enforces strict identity comparison (<code>===</code>). Numeric strings never accidentally match integers, preventing subtle bugs when working with HTTP request inputs or database enum values:</p>
+
+        <pre><code>Arr::after([1, 2, 3], '1'); // null (string !== int)
+Arr::after([1, 2, 3], 1);   // 2</code></pre>
+
+        <h2>Four Real-World Production Use Cases</h2>
+
+        <h3>1. Multi-Step Onboarding &amp; Checkout Wizards</h3>
+        <p>Instead of hardcoding <code>switch</code> statements to determine the next route in a user onboarding flow, store your ordered step identifiers in a single array and let <code>null</code> indicate completion:</p>
+
+        <pre><code>$steps = ['profile', 'billing', 'verification', 'complete'];
+
+$nextStep = Arr::after($steps, $currentStep);
+
+if ($nextStep === null) {
+    return redirect()->route('dashboard');
+}
+
+return redirect()->route("onboarding.{$nextStep}");</code></pre>
+
+        <h3>2. Round-Robin API Provider &amp; Server Rotation</h3>
+        <p>When distributing outbound webhook deliveries or SMS gateway traffic evenly across multiple healthy nodes, pass <code>wrap: true</code> so the final server wraps cleanly back to the first:</p>
+
+        <pre><code>$gateways = ['gateway-us-east', 'gateway-eu-west', 'gateway-ap-south'];
+$lastUsed = Cache::get('active_gateway', 'gateway-ap-south');
+
+$nextGateway = Arr::after($gateways, $lastUsed, wrap: true); // 'gateway-us-east'
+Cache::put('active_gateway', $nextGateway);</code></pre>
+
+        <h3>3. Recurring Weekly Schedules</h3>
+        <p>Calculating the next active day in a custom business calendar becomes a single readable expression without date-math edge cases:</p>
+
+        <pre><code>$days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+$tomorrow = Arr::after($days, 'Sun', wrap: true); // 'Mon'</code></pre>
+
+        <h3>4. UI Carousel &amp; Gallery Pagination</h3>
+        <p>When building server-rendered Livewire or Blade galleries where clicking "Next" on the last slide should loop back to the hero banner:</p>
+
+        <pre><code>$slides = ['overview', 'architecture', 'benchmarks', 'pricing'];
+
+$nextSlide = Arr::after($slides, $activeSlide, wrap: true);</code></pre>
+
+        <h2>Key Takeaways for Open-Source Package Authors</h2>
+        <p>If a pull request you submit to a major framework gets declined because it is outside the core scope, don't let the code sit unused on a local branch. Extracting focused, well-tested helpers into standalone Composer packages keeps your own projects DRY, helps other developers facing the exact same edge cases, and builds a public track record of clean library design.</p>
+        <p>You can inspect the full source code, test suite, and contribute new array helper ideas on <a href="https://github.com/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener">GitHub</a>.</p>
+      </section>
+
+      <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #333;">
+        <h3>About the Author</h3>
+        <p><strong>Gulfaraz Arshad</strong> is a software engineer specializing in Laravel, PHP, MySQL performance optimization, and high-throughput API architectures, and the creator of <code>laravel-arr-extended</code>.</p>
+      </footer>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Gulfaraz Arshad &bull; <a href="/privacy-policy.html">Privacy Policy</a> &bull; <a href="/blog/">Technical Blog</a></p>
+  </footer>
+
+</body>
+</html>
