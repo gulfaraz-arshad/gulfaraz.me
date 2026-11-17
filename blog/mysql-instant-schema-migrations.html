@@ -22,9 +22,9 @@
       gtag('config', 'G-WY7ETR9GRB');
     </script>
 
-    <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your AdSense Publisher ID -->
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
-     crossorigin="anonymous"></script>
+            crossorigin="anonymous"></script>
 
     <style>
         * { box-sizing: border-box; }
@@ -187,4 +187,42 @@ WHERE NAME LIKE '%campaign_events%';</code></pre>
                 </p>
 
                 <h2 class="text-2xl font-bold text-white pt-6">Production Checklist Before Deploying DDL</h2>
-                <ul class="list-disc pl-6 space-y-2 text-slate-3
+                <ul class="list-disc pl-6 space-y-2 text-slate-300">
+                    <li>Verify your production MySQL version is at least <strong class="text-white">8.0.29+</strong> (or <strong class="text-white">8.4 LTS</strong>) if adding columns mid-table or dropping columns.</li>
+                    <li>Confirm the target table does not use <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">ROW_FORMAT=COMPRESSED</code> or <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">FULLTEXT</code> indexes, which disable <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">INSTANT</code> DDL.</li>
+                    <li>Always test the exact <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">DB::statement()</code> query against a staging database running the identical MySQL minor version before deploying to production.</li>
+                </ul>
+            </div>
+
+            <div class="mt-14 p-6 rounded-3xl bg-slate-900/40 border border-slate-800 flex flex-col sm:flex-row items-center gap-6">
+                <img src="/gulfaraz.jpg" alt="Gulfaraz Arshad" class="w-16 h-16 rounded-full object-cover border-2 border-blue-500/40">
+                <div>
+                    <h3 class="text-base font-bold text-white mb-1">Written by Gulfaraz Arshad</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">
+                        Software Developer at Cruise Brains specializing in Laravel, PHP, MySQL performance optimization, and high-throughput API architectures.
+                    </p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-xs">
+        <div class="flex flex-col gap-2">
+            <span>&copy; 2026 Gulfaraz Arshad &mdash; Multan, Pakistan</span>
+            <span class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                B.B. Information Technology Student @ VU Pakistan
+            </span>
+        </div>
+        <div class="flex items-center gap-5">
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">GitHub</a>
+            <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">LinkedIn</a>
+            <a href="mailto:farazgul446@gmail.com" class="hover:text-slate-300 transition-colors">Email</a>
+            <a href="/privacy-policy.html" class="hover:text-slate-300 transition-colors">Privacy Policy</a>
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>
