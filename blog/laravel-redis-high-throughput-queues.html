@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Architecting high-throughput webhook and SMS routing queues in Laravel using Redis, Horizon worker pools, rate limiting, and dead-letter recovery.">
+    <meta property="og:title" content="High-Throughput Queues with Laravel Horizon and Redis | Gulfaraz Arshad">
+    <meta property="og:description" content="Scaling background workers, upstream rate limits, and retry backoffs in Laravel.">
+    <meta property="og:image" content="/gulfaraz.jpg">
+    <title>High-Throughput Queues with Laravel Horizon and Redis | Gulfaraz Arshad</title>
+    <link rel="canonical" href="https://gulfaraz.me/blog/laravel-redis-high-throughput-queues.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY7ETR9GRB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WY7ETR9GRB');
+    </script>
+
+    <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your AdSense Publisher ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
+     crossorigin="anonymous"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-grid {
+            background-color: #09090b;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+        .glow-blob {
+            position: fixed;
+            top: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.7s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .skill-pill {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+        }
+        .nav-link { color: #94a3b8; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #e2e8f0; }
+    </style>
+</head>
+<body class="bg-grid text-slate-200 antialiased selection:bg-blue-500/30 min-h-screen relative">
+
+<div class="glow-blob"></div>
+
+<div class="max-w-5xl mx-auto px-6 relative z-10">
+
+    <nav class="flex justify-between items-center py-10 fade-up">
+        <div class="brand text-lg font-bold tracking-tight text-white"><a href="/">gulfaraz.me</a></div>
+        <div class="flex items-center gap-6">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/blog/" class="nav-link text-blue-400">Blog</a>
+            <a href="/#contact" class="nav-link">Contact</a>
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="nav-link flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto py-8 pb-20 fade-up delay-1">
+        <article>
+            <header class="mb-10 pb-8 border-b border-slate-800">
+                <a href="/blog/" class="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300 uppercase tracking-widest mb-6">
+                    &larr; Back to All Articles
+                </a>
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-5">
+                    High-Throughput Routing Queues with <span class="gradient-text">Laravel Horizon</span> and Redis
+                </h1>
+                <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mb-5">
+                    <span>By <strong class="text-white">Gulfaraz Arshad</strong></span>
+                    <span>&bull;</span>
+                    <span>Published November 17, 2026</span>
+                    <span>&bull;</span>
+                    <span>6 min read</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="skill-pill">Laravel Horizon</span>
+                    <span class="skill-pill">Redis</span>
+                    <span class="skill-pill">Queue Architecture</span>
+                    <span class="skill-pill">Concurrency</span>
+                </div>
+            </header>
+
+            <div class="space-y-6 text-slate-300 leading-relaxed text-[15px]">
+                <h2 class="text-2xl font-bold text-white pt-4">Why Database Queue Drivers Hit a Ceiling Under Load</h2>
+                <p>
+                    Laravel's <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">database</code> queue driver is convenient for low-traffic apps, but once you dispatch thousands of outbound messages or webhook deliveries per minute, row-level locking (<code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">SELECT ... FOR UPDATE SKIP LOCKED</code>) on the <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">jobs</code> table creates unnecessary I/O contention on your primary MySQL instance.
+                </p>
+                <p>
+                    Moving queue state to <strong class="text-white">Redis</strong> paired with <strong class="text-white">Laravel Horizon</strong> offloads job popping and metrics tracking into sub-millisecond in-memory operations while allowing worker pools to auto-scale dynamically based on queue depth.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white pt-6">1. Isolating Queues by Latency and Priority</h2>
+                <p>
+                    Never push bulk campaign exports onto the same queue as real-time webhook acknowledgments or OTP dispatches. Separate your workloads into dedicated supervisor pools in <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">config/horizon.php</code>:
+                </p>
+
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>'environments' => [
+    'production' => [
+        'realtime-supervisor' => [
+            'connection' => 'redis',
+            'queue' => ['critical', 'webhooks'],
+            'balance' => 'auto',
+            'minProcesses' => 4,
+            'maxProcesses' => 24,
+            'balanceMaxShift' => 4,
+            'balanceCooldown' => 3,
+            'tries' => 3,
+            'timeout' => 30,
+        ],
+        'bulk-supervisor' => [
+            'connection' => 'redis',
+            'queue' => ['campaigns', 'exports'],
+            'balance' => 'simple',
+            'processes' => 8,
+            'tries' => 2,
+            'timeout' => 300,
+        ],
+    ],
+],</code></pre>
+
+                <h2 class="text-2xl font-bold text-white pt-6">2. Throttling Outbound API Calls with <code class="text-blue-400">Redis::throttle()</code></h2>
+                <p>
+                    Scaling up to 24 concurrent workers can easily overwhelm downstream carrier or CRM APIs that enforce strict per-second throughput limits. Wrap external HTTP requests in job middleware using <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Redis::throttle()</code> so excess jobs release cleanly back onto the queue without burning <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">$tries</code>:
+                </p>
+
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>&lt;?php
+
+namespace App\Jobs\Middleware;
+
+use Closure;
+use Illuminate\Support\Facades\Redis;
+
+class RateLimitUpstreamProvider
+{
+    public function handle(object $job, Closure $next): void
+    {
+        Redis::throttle('provider:slooce-outbound')
+            ->allow(50)
+            ->every(1)
+            ->then(
+                fn () => $next($job),
+                fn () => $job->release(2)
+            );
+    }
+}</code></pre>
+
+                <p>
+                    Remember to set <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">public int $maxExceptions = 3;</code> on your job class whenever using <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">$job->release()</code>. That ensures rate-limit releases do not prematurely mark a healthy job as failed while genuine unhandled exceptions still trigger failure after three attempts.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white pt-6">3. Exponential Backoff and Graceful Shutdown</h2>
+                <p>
+                    Define an explicit <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">backoff()</code> schedule on jobs interacting with external networks so transient 502/504 gateway errors recover automatically:
+                </p>
+
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>public function backoff(): array
+{
+    return [5, 30, 120];
+}</code></pre>
+
+                <p>
+                    Finally, always configure <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">retry_after</code> in <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">config/queue.php</code> to be strictly greater than your longest supervisor <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">timeout</code> (for example, <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">timeout = 300</code> and <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">retry_after = 360</code>) so Redis never re-queues a long-running job while a worker is still actively executing it.
+                </p>
+            </div>
+
+            <div class="mt-14 p-6 rounded-3xl bg-slate-900/40 border border-slate-800 flex flex-col sm:flex-row items-center gap-6">
+                <img src="/gulfaraz.jpg" alt="Gulfaraz Arshad" class="w-16 h-16 rounded-full object-cover border-2 border-blue-500/40">
+                <div>
+                    <h3 class="text-base font-bold text-white mb-1">Written by Gulfaraz Arshad</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">
+                        Software Developer at Cruise Brains specializing in Laravel, PHP, MySQL performance optimization, and high-throughput API architectures.
+                    </p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-xs">
+        <div class="flex flex-col gap-2">
+            <span>&copy; 2026 Gulfaraz Arshad &mdash; Multan, Pakistan</span>
+            <span class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                B.B. Information Technology Student @ VU Pakistan
+            </span>
+        </div>
+        <div class="flex items-center gap-5">
+            <a href="https://github.com/gulfaraz-arshad" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">GitHub</a>
+            <a href="https://pk.linkedin.com/in/gulfaraz-arshad-082323282" target="_blank" rel="noopener" class="hover:text-slate-300 transition-colors">LinkedIn</a>
+            <a href="mailto:farazgul446@gmail.com" class="hover:text-slate-300 transition-colors">Email</a>
+            <a href="/privacy-policy.html" class="hover:text-slate-300 transition-colors">Privacy Policy</a>
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>
