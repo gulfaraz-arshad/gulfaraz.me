@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="How a rejected Laravel framework pull request turned into gulfaraz-arshad/laravel-arr-extended — adding strict, associative-safe Arr::after() navigation with wrap-around support.">
-    <meta property="og:title" content="Building Laravel Arr Extended: Arr::after() | Gulfaraz Arshad">
-    <meta property="og:description" content="Clean sequential and circular array navigation in PHP 8.1+ and Laravel 11/12.">
+          content="How and why I built gulfaraz-arshad/laravel-arr-extended after Laravel PR #60081 — adding strict-typed Arr::after() with wrap-around rotation for Laravel 11 & 12.">
+    <meta property="og:title" content="Arr::after() in Laravel: Building laravel-arr-extended | Gulfaraz Arshad">
+    <meta property="og:description" content="Filling a small gap in Illuminate\Support\Arr with strict comparison, wrap-around support, and clean sequential lookups.">
     <meta property="og:image" content="/gulfaraz.jpg">
-    <title>Building Laravel Arr Extended: Arr::after() | Gulfaraz Arshad</title>
+    <title>Arr::after() in Laravel: Building laravel-arr-extended | Gulfaraz Arshad</title>
     <link rel="canonical" href="https://gulfaraz.me/blog/laravel-arr-extended.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -22,38 +22,26 @@
       gtag('config', 'G-WY7ETR9GRB');
     </script>
 
-    <!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your AdSense Publisher ID -->
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9972929677112087"
-     crossorigin="anonymous"></script>
+            crossorigin="anonymous"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        h1, h2, h3, .brand {
-            font-family: 'Syne', sans-serif;
-        }
-
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
         .gradient-text {
             background: linear-gradient(90deg, #3b82f6, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .bg-grid {
             background-color: #09090b;
             background-image: linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
             linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
             background-size: 48px 48px;
         }
-
         .glow-blob {
             position: fixed;
             top: -200px;
@@ -65,30 +53,12 @@
             pointer-events: none;
             z-index: 0;
         }
-
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(24px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .fade-up {
-            animation: fadeUp 0.7s ease both;
-        }
-
-        .delay-1 {
-            animation-delay: 0.1s;
-        }
-
-        .delay-2 {
-            animation-delay: 0.2s;
-        }
-
+        .fade-up { animation: fadeUp 0.7s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
         .skill-pill {
             font-size: 10px;
             font-weight: 700;
@@ -100,17 +70,8 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #94a3b8;
         }
-
-        .nav-link {
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: #e2e8f0;
-        }
+        .nav-link { color: #94a3b8; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #e2e8f0; }
     </style>
 </head>
 <body class="bg-grid text-slate-200 antialiased selection:bg-blue-500/30 min-h-screen relative">
@@ -141,7 +102,7 @@
                     &larr; Back to All Articles
                 </a>
                 <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-5">
-                    Building Laravel Arr Extended: Sequential &amp; Circular Array Navigation with <span class="gradient-text">Arr::after()</span>
+                    <code class="text-blue-400">Arr::after()</code> in Laravel: Filling the Gap with <span class="gradient-text">laravel-arr-extended</span>
                 </h1>
                 <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mb-5">
                     <span>By <strong class="text-white">Gulfaraz Arshad</strong></span>
@@ -153,139 +114,81 @@
                 <div class="flex flex-wrap gap-2">
                     <span class="skill-pill">Laravel</span>
                     <span class="skill-pill">PHP 8.1+</span>
-                    <span class="skill-pill">Composer Package</span>
                     <span class="skill-pill">Open Source</span>
+                    <span class="skill-pill">Packagist</span>
                 </div>
             </header>
 
             <div class="space-y-6 text-slate-300 leading-relaxed text-[15px]">
-                <h2 class="text-2xl font-bold text-white pt-4">Why I Built <code class="text-blue-400">laravel-arr-extended</code></h2>
+                <h2 class="text-2xl font-bold text-white pt-4">The Missing Helper in <code class="text-blue-400">Illuminate\Support\Arr</code></h2>
                 <p>
-                    Laravel's <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Illuminate\Support\Arr</code> utility class is one of the most ergonomic parts of the framework. Methods like <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::first()</code>, <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::last()</code>, and <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::get()</code> eliminate dozens of repetitive <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">isset()</code> checks across production codebases.
+                    Laravel's <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr</code> utility class covers dozens of everyday array operations—from <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::first()</code> and <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::last()</code> to <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::get()</code> and <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::pluck()</code>. Yet there is no expressive, single-call helper to retrieve the element immediately <em>after</em> a given value in an array.
                 </p>
                 <p>
-                    However, while building multi-step checkout flows, state machines, and round-robin provider routers in Laravel, I kept running into a small but persistent gap: there is no built-in helper to retrieve the element immediately following a specific value in an array.
+                    In native PHP, writing that lookup manually means chaining <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">array_search($value, $array, true)</code>, guarding against <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">false</code>, re-indexing keys with <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">array_values()</code> if the array is associative, and checking bounds before reading <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">$values[$index + 1]</code>.
                 </p>
                 <p>
-                    I originally opened a pull request against the Laravel framework (PR #60081) proposing <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::after()</code>. Taylor Otwell reviewed it and noted that the helper felt slightly too specialized for the core framework, which intentionally stays lean so maintainers aren't carrying every niche utility forever. That feedback made complete sense—and it gave me the exact blueprint to release <a href="https://github.com/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener" class="text-blue-400 hover:underline font-medium">gulfaraz-arshad/laravel-arr-extended</a> as a dedicated, zero-bloat Composer package for PHP 8.1+ and Laravel 11.x/12.x.
+                    I originally submitted this helper as <a href="https://github.com/laravel/framework/pull/60081" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Laravel Framework PR #60081</a>. To keep the core framework surface minimal, Taylor Otwell declined merging it into core—so I packaged and published it as <a href="https://packagist.org/packages/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener" class="text-blue-400 hover:underline">gulfaraz-arshad/laravel-arr-extended</a> for Laravel 11.x and 12.x.
                 </p>
 
-                <h2 class="text-2xl font-bold text-white pt-6">The Problem with Manual <code class="text-blue-400">array_search()</code> Boilerplate</h2>
+                <h2 class="text-2xl font-bold text-white pt-6">Installation &amp; Method Signature</h2>
                 <p>
-                    Without a dedicated helper, fetching the next item after a known value in PHP usually ends up looking like this:
+                    Install the package via Composer in any PHP 8.1+ and Laravel 11 or 12 application:
                 </p>
-
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>$steps = ['personal', 'address', 'payment', 'confirm'];
-$current = 'payment';
-
-$index = array_search($current, $steps, true);
-$next = ($index !== false && isset($steps[$index + 1]))
-    ? $steps[$index + 1]
-    : null;</code></pre>
-
-                <p>On the surface, three lines of code seem harmless. In real applications, this pattern breaks down quickly for three reasons:</p>
-                <ul class="list-disc pl-6 space-y-2.5 text-slate-300">
-                    <li><strong class="text-white">Associative arrays fail silently:</strong> Using <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">$index + 1</code> assumes consecutive integer keys (<code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">0, 1, 2...</code>). If your array has string keys or gaps after an <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">unset()</code> call, <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">$index + 1</code> returns <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">null</code> even when a next element exists.</li>
-                    <li><strong class="text-white">No circular wrap-around:</strong> For round-robin queues, carousel slides, or weekly schedules, reaching the final element requires an extra modulo or reset branch to loop back to index zero.</li>
-                    <li><strong class="text-white">Loose type traps:</strong> Forgetting the third <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">true</code> argument in <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">array_search()</code> causes PHP's type juggling to match <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">'1'</code> against <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">1</code> or <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">0</code> against <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">false</code>.</li>
-                </ul>
-
-                <h2 class="text-2xl font-bold text-white pt-6">Installing and Using <code class="text-blue-400">Arr::after()</code></h2>
-                <p>You can install the package in any Laravel 11 or 12 application via Composer:</p>
 
                 <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-cyan-300"><code>composer require gulfaraz-arshad/laravel-arr-extended</code></pre>
 
                 <p>
-                    Once installed, import <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">GulfarazArshad\LaravelArrExtended\Arr</code> and call <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::after()</code> with your array, target value, and optional <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">wrap</code> flag:
+                    The <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::after()</code> method accepts three parameters:
                 </p>
 
                 <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>&lt;?php
 
 use GulfarazArshad\LaravelArrExtended\Arr;
 
-// Basic sequential lookup
-Arr::after(['a', 'b', 'c'], 'a'); // 'b'
+Arr::after(array $array, mixed $value, bool $wrap = false): mixed</code></pre>
 
-// End of array returns null by default
-Arr::after(['a', 'b', 'c'], 'c'); // null
+                <h2 class="text-2xl font-bold text-white pt-6">Core Capabilities &amp; Edge Cases</h2>
+                <ul class="list-disc pl-6 space-y-2.5 text-slate-300">
+                    <li><strong class="text-white">Predictable boundary handling:</strong> Returns <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">null</code> when the target is the last element, when the value is absent, or when the array is empty.</li>
+                    <li><strong class="text-white">Circular wrap-around (<code class="text-blue-400">wrap: true</code>):</strong> Passing <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">wrap: true</code> wraps seamlessly from the final item back to the first item—ideal for round-robin queues and cyclic schedules.</li>
+                    <li><strong class="text-white">Associative array support:</strong> Works cleanly on string-keyed associative arrays such as <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">['x' => 'a', 'y' => 'b']</code> without losing positional order.</li>
+                    <li><strong class="text-white">Strict type comparison:</strong> Uses strict equality (<code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">===</code>) so <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::after([1, 2, 3], '1')</code> safely returns <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">null</code> instead of falling victim to PHP type juggling.</li>
+                </ul>
 
-// Missing value or empty array returns null safely
-Arr::after(['a', 'b', 'c'], 'z'); // null
-Arr::after([], 'a');              // null
-
-// Works seamlessly on associative arrays regardless of key names
-Arr::after(['first_key' => 'a', 'second_key' => 'b'], 'a'); // 'b'</code></pre>
-
-                <h2 class="text-2xl font-bold text-white pt-6">Strict Type Safety Out of the Box</h2>
+                <h2 class="text-2xl font-bold text-white pt-6">Practical Production Use Cases</h2>
                 <p>
-                    Under the hood, <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">Arr::after()</code> enforces strict identity comparison (<code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">===</code>). Numeric strings never accidentally match integers, preventing subtle bugs when working with HTTP request inputs or database enum values:
+                    In production Laravel applications, sequential array transitions show up everywhere—multi-step onboarding wizards, round-robin server/provider selection, and recurring weekly schedules:
                 </p>
 
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>Arr::after([1, 2, 3], '1'); // null (string !== int)
-Arr::after([1, 2, 3], 1);   // 2</code></pre>
+                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>&lt;?php
 
-                <h2 class="text-2xl font-bold text-white pt-6">Four Real-World Production Use Cases</h2>
+use GulfarazArshad\LaravelArrExtended\Arr;
 
-                <h3 class="text-lg font-bold text-white pt-2">1. Multi-Step Onboarding &amp; Checkout Wizards</h3>
-                <p>
-                    Instead of hardcoding <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">switch</code> statements to determine the next route in a user onboarding flow, store your ordered step identifiers in a single array and let <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">null</code> indicate completion:
-                </p>
+// 1. Multi-step checkout or onboarding wizard
+$steps = ['personal', 'address', 'payment', 'confirm'];
+$nextStep = Arr::after($steps, 'payment'); // 'confirm'
+$isDone   = Arr::after($steps, 'confirm'); // null (wizard complete)
 
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>$steps = ['profile', 'billing', 'verification', 'complete'];
+// 2. Round-robin SMS gateway / worker rotation
+$gateways = ['gateway-primary', 'gateway-secondary', 'gateway-backup'];
+$nextGateway = Arr::after($gateways, 'gateway-backup', wrap: true); // 'gateway-primary'
 
-$nextStep = Arr::after($steps, $currentStep);
-
-if ($nextStep === null) {
-    return redirect()->route('dashboard');
-}
-
-return redirect()->route("onboarding.{$nextStep}");</code></pre>
-
-                <h3 class="text-lg font-bold text-white pt-2">2. Round-Robin API Provider &amp; Server Rotation</h3>
-                <p>
-                    When distributing outbound webhook deliveries or SMS gateway traffic evenly across multiple healthy nodes, pass <code class="bg-slate-900 border border-slate-800 text-blue-300 px-1.5 py-0.5 rounded text-xs">wrap: true</code> so the final server wraps cleanly back to the first:
-                </p>
-
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>$gateways = ['gateway-us-east', 'gateway-eu-west', 'gateway-ap-south'];
-$lastUsed = Cache::get('active_gateway', 'gateway-ap-south');
-
-$nextGateway = Arr::after($gateways, $lastUsed, wrap: true); // 'gateway-us-east'
-Cache::put('active_gateway', $nextGateway);</code></pre>
-
-                <h3 class="text-lg font-bold text-white pt-2">3. Recurring Weekly Schedules</h3>
-                <p>
-                    Calculating the next active day in a custom business calendar becomes a single readable expression without date-math edge cases:
-                </p>
-
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>$days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
+// 3. Weekly schedule rotation
+$days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 $tomorrow = Arr::after($days, 'Sun', wrap: true); // 'Mon'</code></pre>
 
-                <h3 class="text-lg font-bold text-white pt-2">4. UI Carousel &amp; Gallery Pagination</h3>
                 <p>
-                    When building server-rendered Livewire or Blade galleries where clicking "Next" on the last slide should loop back to the hero banner:
-                </p>
-
-                <pre class="bg-slate-950 border border-slate-800 rounded-2xl p-5 overflow-x-auto text-xs text-slate-200 leading-relaxed"><code>$slides = ['overview', 'architecture', 'benchmarks', 'pricing'];
-
-$nextSlide = Arr::after($slides, $activeSlide, wrap: true);</code></pre>
-
-                <h2 class="text-2xl font-bold text-white pt-6">Key Takeaways for Open-Source Package Authors</h2>
-                <p>
-                    If a pull request you submit to a major framework gets declined because it is outside the core scope, don't let the code sit unused on a local branch. Extracting focused, well-tested helpers into standalone Composer packages keeps your own projects DRY, helps other developers facing the exact same edge cases, and builds a public track record of clean library design.
-                </p>
-                <p>
-                    You can inspect the full source code, test suite, and contribute new array helper ideas on <a href="https://github.com/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener" class="text-blue-400 hover:underline font-medium">GitHub</a>.
+                    You can inspect the full source code, PHPUnit test suite, and contribute additional array helpers on <a href="https://github.com/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener" class="text-blue-400 hover:underline">GitHub</a> or install it directly from <a href="https://packagist.org/packages/gulfaraz-arshad/laravel-arr-extended" target="_blank" rel="noopener" class="text-blue-400 hover:underline">Packagist</a>.
                 </p>
             </div>
 
-            <!-- Author Bio Card -->
             <div class="mt-14 p-6 rounded-3xl bg-slate-900/40 border border-slate-800 flex flex-col sm:flex-row items-center gap-6">
                 <img src="/gulfaraz.jpg" alt="Gulfaraz Arshad" class="w-16 h-16 rounded-full object-cover border-2 border-blue-500/40">
                 <div>
                     <h3 class="text-base font-bold text-white mb-1">Written by Gulfaraz Arshad</h3>
                     <p class="text-slate-400 text-xs leading-relaxed">
-                        Software Developer at Cruise Brains specializing in Laravel, PHP, MySQL performance optimization, and high-throughput API architectures. Creator of <code class="text-blue-400">laravel-arr-extended</code>.
+                        Software Developer at Cruise Brains specializing in Laravel, PHP, MySQL performance optimization, and high-throughput API architectures.
                     </p>
                 </div>
             </div>
