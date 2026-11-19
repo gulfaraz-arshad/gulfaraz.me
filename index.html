@@ -9,6 +9,7 @@
     <meta property="og:description" content="Explore the portfolio of Gulfaraz Arshad, a results-driven engineer building full-stack applications.">
     <meta property="og:image" content="gulfaraz.jpg">
     <title>Gulfaraz Arshad | Laravel Developer</title>
+    <link rel="canonical" href="https://gulfaraz.me/">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY7ETR9GRB"></script>
@@ -87,11 +88,11 @@
             }
         }
 
-        .stat-card, .project-card, .strength-card {
+        .stat-card, .project-card, .strength-card, .article-card {
             transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .stat-card:hover, .project-card:hover, .strength-card:hover {
+        .stat-card:hover, .project-card:hover, .strength-card:hover, .article-card:hover {
             transform: translateY(-6px);
             border-color: rgba(59, 130, 246, 0.4);
             box-shadow: 0 20px 40px rgba(59, 130, 246, 0.05);
@@ -269,6 +270,38 @@
         </div>
     </section>
 
+    <section class="py-16 space-y-10 fade-up delay-3">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-white tracking-tight mb-1">Latest Articles</h2>
+                <p class="text-slate-500 text-sm">Deep dives into Laravel performance, MySQL scaling, and backend architecture.</p>
+            </div>
+            <a href="/blog/" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors">
+                View All Articles &rarr;
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/blog/laravel-arr-extended.html" class="article-card block p-7 rounded-3xl bg-slate-900/40 border border-slate-800">
+                <div class="text-[11px] text-slate-500 mb-3">Nov 17, 2026 &bull; 5 min read</div>
+                <h3 class="text-base font-bold text-white mb-2.5 leading-snug">Extending Laravel's Arr Helper with Custom Array Macros</h3>
+                <p class="text-slate-400 text-xs leading-relaxed mb-4">How laravel-arr-extended brings recursive filtering, key normalization, and clean array transformations into Laravel.</p>
+                <span class="text-xs font-semibold text-blue-400">Read article &rarr;</span>
+            </a>
+            <a href="/blog/mysql-instant-schema-migrations.html" class="article-card block p-7 rounded-3xl bg-slate-900/40 border border-slate-800">
+                <div class="text-[11px] text-slate-500 mb-3">Nov 17, 2026 &bull; 6 min read</div>
+                <h3 class="text-base font-bold text-white mb-2.5 leading-snug">Zero-Downtime MySQL 8.4 Migrations on Multi-Million Row Tables</h3>
+                <p class="text-slate-400 text-xs leading-relaxed mb-4">Using ALGORITHM=INSTANT and metadata lock checks to alter massive production tables without blocking writes.</p>
+                <span class="text-xs font-semibold text-blue-400">Read article &rarr;</span>
+            </a>
+            <a href="/blog/laravel-chunk-vs-lazybyid.html" class="article-card block p-7 rounded-3xl bg-slate-900/40 border border-slate-800">
+                <div class="text-[11px] text-slate-500 mb-3">Nov 17, 2026 &bull; 7 min read</div>
+                <h3 class="text-base font-bold text-white mb-2.5 leading-snug">chunk() vs. lazyById() in Laravel: Processing Millions Safely</h3>
+                <p class="text-slate-400 text-xs leading-relaxed mb-4">Why SQL OFFSET degrades exponentially on huge tables and how keyset pagination keeps memory flat.</p>
+                <span class="text-xs font-semibold text-blue-400">Read article &rarr;</span>
+            </a>
+        </div>
+    </section>
+
     <section class="py-20 fade-up delay-3">
         <h2 class="text-3xl font-bold text-white mb-10 tracking-tight">Professional Strengths</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -286,7 +319,7 @@
             </div>
             <div class="strength-card p-6 rounded-2xl bg-slate-900/30 border border-slate-800/50">
                 <h4 class="text-purple-400 font-bold uppercase text-[10px] tracking-widest mb-2">Management</h4>
-                <h3 class="text-white font-semibold mb-3">Risk & QA</h3>
+                <h3 class="text-white font-semibold mb-3">Risk &amp; QA</h3>
                 <p class="text-slate-400 text-sm leading-relaxed">Managing product roadmaps and schedules while prioritizing stability and
                     security.</p>
             </div>
@@ -322,10 +355,7 @@
             </div>
 
             <form id="contact-form" class="contact-us space-y-4 bg-slate-900/40 p-8 rounded-3xl border border-slate-800">
-                <!-- TEST: Honeypot field (Leave empty for normal user, fill with text to test bot detection) -->
                 <input type="text" name="_hp" tabIndex="-1" autocomplete="off" style="display:none;">
-
-                <!-- TEST: Hidden fields to test capture_hidden_fields feature -->
                 <input type="hidden" name="lead_source" value="portfolio_website">
                 <input type="hidden" name="campaign_id" value="q3_hiring_2026">
 
@@ -368,12 +398,10 @@
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         
-        // Allow tracking script to catch submit, then redirect or show success UI
         status.innerHTML = "Thank you! Your message has been sent.";
         status.classList.remove("hidden");
         status.classList.add("text-emerald-400");
 
-        // Optional delay before redirecting if required
         setTimeout(() => {
             window.location.href = "thanks.html";
         }, 1000);
